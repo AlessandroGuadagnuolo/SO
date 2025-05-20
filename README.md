@@ -1,2 +1,2 @@
 # SO
-Repository per l'esame di Sistemi Operativi
+Repository per il materiale di Sistemi Operativi
