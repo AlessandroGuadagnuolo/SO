@@ -1,0 +1,67 @@
+Attraversamento del fiume
+
+Da qualche parte vicino Napoli, c'è una barca a remi che viene usata sia dagli Informatici che dagli 
+Ingegneri Informatici per attraversare un fiume. La barca può contenere esattamente quattro persone e 
+non lascerà la riva con più o meno persone. Per garantire la sicurezza dei passeggeri, non è consentito 
+mettere un Informatico nella barca con tre Ingegneri, né un Ingegnere con tre Informatici. Qualsiasi 
+altra combinazione è sicura.
+
+• Quando ogni thread sale sulla barca, deve invocare una funzione chiamata imbarco. È necessario 
+garantire che tutti e quattro i thread di ogni barca invochino imbarco prima che lo facciano i thread
+della barca successiva.
+
+• Dopo che tutti e quattro i thread hanno invocato imbarco, esattamente uno di loro deve chiamare una 
+funzione chiamata remiBarca, indicando che quel thread prenderà i remi. Non importa quale thread
+chiami la funzione, purché uno lo faccia.
+
+• Non ci si deve preoccupare della direzione di marcia. Supponiamo di essere interessati solo al traffico 
+che va in una delle direzioni
+
+//strutture e variabili
+
+primoTurnstile: Semaphore :=0
+secondoTurnstile: Semaphore := 1
+mutex : Semaphore := 1 
+Informatici, Ingegneri, conteggio = 0 
+informaticiCoda : Semaphore := 0 
+ingegneriCoda : Semaphore := 0
+mutexBarriera : Semaphore := 1
+Rematore = False
+
+-----------------------------------------------------------
+
+Informatici() //codice analogo per gli Ingegneri
+begin
+
+wait(mutex)
+Informatici ++
+if informatici == 4
+	signal(informaticiCoda) x 4
+	Informatici = 0
+	Rematore = True
+else if Informatici == 2 and Ingegneri >= 2
+	signal(informaticiCoda) x 2
+	signal(ingegneriCoda) x 2
+	Informatici = 0
+	Ingegneri -=2
+	Rematore = True
+else
+	signal(mutex) # il Rematore mantiene il mutex
+wait(informaticiCoda)
+imbarco()
+wait(mutexBarriera)
+conteggio ++
+if conteggio == 4
+	signal(primoTurnstile) x 4
+signal(mutexBarriera)
+wait(primoTurnstile)
+wait(mutexBarriera)
+conteggio -= 1
+if conteggio == 0
+	signal(secontoTurnstile) x 4
+signal(mutexBarriera)
+wait(secondoTurnstile)
+if Rematore
+	remaBarca()
+	signal(mutex) //il rematore rilascia il mutex
+end

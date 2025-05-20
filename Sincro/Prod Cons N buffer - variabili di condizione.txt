@@ -1,0 +1,53 @@
+Risolvere il problema produttori-consumatori con N buffer usando le variabili di condizione.
+(variabili di cond  [cond_wait(&cond,&mutex)] [cond_signal(&cond)], e il mutex [lock] [unlock])
+Funzioni inserisci e preleva da parte da implementare.
+
+//dichiarazione e inizializzazione variabili
+buffer[N]; //circolare
+mutex_t mutex;
+int count = 0;
+int prod_ptr,cons_ptr = 0;
+cond_t pieno, vuoto;
+
+
+inserisci(item){
+	buffer[prod_ptr] = item;
+	prod_ptr = prod_ptr + 1 mod N;
+	count ++;	
+}
+
+preleva(item){
+	tmp = buffer[cons_ptr];
+	cons_ptr = cons_ptr + 1 mod N;
+	count --;
+	return(tmp);
+}
+
+
+Produttore
+
+begin
+repeat
+	item = newitem();
+	lock(mutex);
+	while(count == N)
+		cond_wait(&vuoto,&mutex); //rilascia il mutex per permettere ad altri thread di effettuare lo stesso controllo
+	inserisci(item);	
+	cond_signal(&pieno);
+	unlock(mutex);
+forever
+end
+
+
+Consumatore
+
+begin
+repeat
+	lock(mutex);
+	while(count == 0)
+		cond_wait(&pieno,&mutex);
+	tmp = preleva();
+	cond_signal(&vuoto);
+	unlock(mutex);
+forever
+end

@@ -1,0 +1,53 @@
+In una fabbrica, N operai preparano piastrelle da far cuocere in un forno, capace di cuocerne M contemporaneamente.
+
+All'uscita dal forno K operai visionano le piastrelle per decorarle secondo tale sequenza di passi: se trova una piastrella difettata inizia
+a prenderne dal forno 2 alla volta, altrimenti ne prende 1 alla volta.
+
+Individuare i thread da modellare e scriverne lo pseudocodice.
+
+//dichiarazione e inizializzazione variabili
+
+semaforo contatore fornoVuoto=M;
+semaforo contatore fornoPieno=0;
+semaforo binario mutex=1;
+int piastrelle=0;
+Boolean difettosa=False
+
+-------------------------------------------
+operaio_forno
+
+begin
+repeat
+
+	wait(fornoVuoto);
+	wait(mutex);
+	piastrelle++;
+	{ poni piastrella in forno }
+	signal(mutex);
+	signal(fornoPieno);
+	{ piastrelle in cottura }
+	
+forever
+
+-------------------------------------------
+operaio_decora
+
+repeat
+
+	wait(fornoPieno);
+	wait(mutex);
+	piastrelle--
+	if(piastre_difettate())
+		difettosa=True
+ 		signal(mutex)
+ 		wait(fornoPieno)
+	 	wait(mutex)
+		piastrelle--
+	signal(mutex)
+	signal(fornoVuoto);
+	if difettosa
+		signal(fornoVuoto)
+	{decoraPiastrelle}	
+	
+forever
+end
